@@ -1,0 +1,248 @@
+Activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+
+    <ListView
+        android:id="@+id/ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sp"
+        android:entries="@array/topping"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_gravity="left"
+        android:id="@+id/iv"/>
+        <Button
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:id="@+id/b1"
+            android:text="PAY"/>
+
+
+
+
+</LinearLayout>
+
+
+
+MainActivity.java
+
+package com.example.adapter2;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
+    ListView l;
+    ImageView v;
+    Spinner sp;
+    Button b1;
+    SharedPreferences ps;
+    String[] img = {"donut","Choclate icecreme","fruit salad","sandwitch"};
+    int image[]={R.drawable.f1, R.drawable.f2, R.drawable.f3, R.drawable.f4};
+    String[] price={"60","60","120","40"};
+    String[] top={"20","30","40"};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        l = (ListView) findViewById(R.id.ll);
+        v = (ImageView) findViewById(R.id.iv);
+        b1=(Button)findViewById(R.id.b1);
+        sp=(Spinner)findViewById(R.id.sp);
+        sp.setOnItemSelectedListener(this);
+        ArrayAdapter<String> adapter = new
+                ArrayAdapter<>(this,android.R.layout.simple_list_item_1,img);
+        ps=getSharedPreferences("mypref",MODE_PRIVATE);
+        l.setAdapter(adapter);
+        l.setOnItemClickListener(this);
+        b1.setOnClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
+        String item1=img[i];
+        v.setImageResource(image[i]);
+        Integer sum=0;
+        Integer n1=Integer.parseInt(price[i]);
+        sum=sum+n1;
+        Toast.makeText(this,item1,Toast.LENGTH_LONG).show();
+        String s=Integer.toString(sum);
+        SharedPreferences.Editor edit=ps.edit();
+        edit.putString("choice",item1);
+        edit.putString("price1",s);
+        edit.apply();
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+Intent i1=new Intent(this,Main2Activity.class);
+startActivity(i1);
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int i, long id)  {
+        TextView myview=(TextView) view;
+        String topp= (String) myview.getText();
+        Integer q=0;
+        Integer n1=Integer.parseInt(top[i]);
+        q=q+n1;
+        String t=Integer.toString(q);
+
+        SharedPreferences.Editor edit=ps.edit();
+        edit.putString("toppings",topp);
+        edit.putString("price2",t);
+        edit.apply();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+}
+
+
+
+
+String..xml
+<resources>
+    <string name="app_name">adapter2</string>
+    <string-array name="topping">
+        <item>choclate powder</item>
+        <item>dry fruit</item>
+        <item>caramel</item>
+
+    </string-array>
+
+</resources>
+
+activity2.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Main2Activity">
+
+
+    <TextView
+        android:id="@+id/t1"
+        android:layout_width="152dp"
+        android:layout_height="wrap_content"
+        android:text="chooser" />
+
+    <EditText
+        android:id="@+id/e1"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
+    <TextView
+        android:id="@+id/t3"
+        android:layout_width="152dp"
+        android:layout_height="wrap_content"
+        android:text="topping" />
+    <EditText
+        android:id="@+id/e3"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
+    <TextView
+        android:id="@+id/t2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="total price" />
+
+    <EditText
+        android:id="@+id/e2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName" />
+</LinearLayout>
+
+
+main2Activity.java
+
+
+package com.example.adapter2;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class Main2Activity extends AppCompatActivity {
+
+    EditText e1,e2,e3;
+    SharedPreferences ps;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+        e1=(EditText)findViewById(R.id.e1);
+        e2=(EditText)findViewById(R.id.e2);
+        e3=(EditText)findViewById(R.id.e3);
+        ps=getSharedPreferences("mypref",MODE_PRIVATE);
+        String j=ps.getString("toppings","nonbe");
+        String s=ps.getString("choice","nonbe");
+        String d=ps.getString("price1","none");
+        String f=ps.getString("price2","none");
+        double num1 = Double.parseDouble(d);
+        double num2 = Double.parseDouble(f);
+        // add both number and store it to sum
+        double sum = num1 + num2;
+        String sum1=Double.toString(sum);
+        e1.setText(s);
+        e2.setText(sum1);
+        e3.setText(j);
+
+
+    }
+
+
+
+
+
+}
